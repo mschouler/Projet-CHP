@@ -1,22 +1,6 @@
-program proj_1
+module proj_1
 implicit none
-integer :: i
-real*8,dimension(4,4)::A
-real*8,dimension(4)::b
-real*8,dimension(4)::X
-X=0.
-print*,X
-b=1.
-A(1,:)=(/10.,-1.,-1.,-1./)
-A(2,:)=(/-1.,10.,-1.,-1./)
-A(3,:)=(/-1.,-1.,10.,-1./)
-A(4,:)=(/-1.,-1.,-1.,10./)
 
-do i=1,4
-   write(*,*) A(i,1:4)
-enddo
-call grad_conj(4,A,X,b)
-print*,X
 
 contains
   subroutine grad_conj(n,A,X,b)
@@ -74,9 +58,44 @@ contains
            scal=scal+X(i)*Y(i)
         end do
         end function
-        
+
+        subroutine mult(alpha, beta, gama, X, B, Nx,Ny)
+          implicit none
+          real*8, intent(in) :: alpha, beta, gama
+          integer, intent(in) :: Nx,Ny
+          integer :: i, k, l,n
+          real*8, dimension(Nx*Ny), intent(in) :: X
+          real*8, dimension(Nx*Ny), intent(out) :: B
+          n=Nx*Ny
+
+          do i=1,Nx
+             B(i) = alpha*X(i) + beta*X(i+1) + gama*X(i+Nx)
+          enddo
+          
+          do i=Nx+1, n-(Nx+1)
+             if (MOD(i, Nx) == 1) then
+                k=0
+                l=1
+                
+             else if (MOD(i, Nx) == 0) then
+                k=1
+                l=0
+             else
+                k=1
+                l=1
+             endif
+             
+             B(i) = gama*(X(i-Nx) + X(i+Nx)) + beta*(k*X(i-1) + l*X(i+1)) + gama*X(i)
+          enddo
+
+          do i=n-Nx, n
+             
+             B(i) = gama*X(i-Nx) + beta*X(i-1) + alpha*X(i)
+          enddo
+
+        end subroutine mult
       
-end program
+end module
 
 
 
