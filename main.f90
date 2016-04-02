@@ -7,7 +7,7 @@ real, dimension(:), allocatable :: U, F, X, Y;
 real*8,dimension(4,4)::A
 real*8,dimension(4)::b
 real*8,dimension(4)::X2
-real*8,dimension(20)::X1,C
+real*8,dimension(:),allocatable::X1,C
 !X2=0.
 !print*,X2
 !b=1.
@@ -38,6 +38,8 @@ dy = Ly/Ny
 
 allocate(U(1:Nx*Ny))
 allocate(F(1:Nx*Ny))
+allocate(X1(Nx*Ny))
+allocate(C(Nx*Ny))
 
 allocate(X(1:Nx))
 allocate(Y(1:Ny))
@@ -52,14 +54,27 @@ enddo
 
 do i=1,Ny
  do j=1,Nx
-    F((i-1)*Nx+j) = Y(j) - Y(j)**2 + X(i) - X(i)**2
+    F((i-1)*Nx+j) = Y(i) - Y(i)**2 + X(j) - X(j)**2
  end do
 end do
 
-write(*,*)F
+open( unit=10, &
+file = "f.txt", &
+action = "write", &
+status = "unknown")
+do i=1,Ny
+    do j=1,Nx
+    write(10,*) Y(i),X(j),F((i-1)*Nx+j)
+    end do
+end do
 
-X1=1.
-call mult(1.0D0,1.0D0,1.0D0,X1,C,Nx,Ny)
+!X1=1.
+!call mult(1.0D0,1.0D0,1.0D0,X1,C,Nx,Ny)
+
+!write(*,*) 'Le produit vaut '
+!do i=1,NX*Ny
+    !print*,C(i)
+!end do
 
 
 end program
