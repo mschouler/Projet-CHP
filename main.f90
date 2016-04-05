@@ -1,15 +1,29 @@
 program projet
 use proj_1
 implicit none
-real :: Lx, Ly, dx, dy, dt, D
-real*8::alpha, beta, gama
+real :: Lx, Ly, dx, dy
 integer :: Nx, Ny, i, j
-real*8, dimension(:), allocatable :: U, Uexacte,  F, X, Y;
+real, dimension(:), allocatable :: U, F, X, Y;
 real*8,dimension(4,4)::A
 real*8,dimension(4)::b
 real*8,dimension(4)::X2
-real*8,dimension(:),allocatable::X1, C
+real*8,dimension(20)::X1,C
+!X2=0.
+!print*,X2
+!b=1.
+!A(1,:)=(/10.,-1.,-1.,-1./)
+!A(2,:)=(/-1.,10.,-1.,-1./)
+!A(3,:)=(/-1.,-1.,10.,-1./)
+!A(4,:)=(/-1.,-1.,-1.,10./)
 
+!call grad_conj(4,A,X2,b)
+!print*,matmul(A,X2)
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!! TEST DE LA BOUCLE MULT !!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 Lx=1
 Ly=1
@@ -23,10 +37,7 @@ dx = Lx/Nx
 dy = Ly/Ny
 
 allocate(U(1:Nx*Ny))
-allocate(Uexacte(1:Nx*Ny))
 allocate(F(1:Nx*Ny))
-allocate(X1(Nx*Ny))
-allocate(C(Nx*Ny))
 
 allocate(X(1:Nx))
 allocate(Y(1:Ny))
@@ -41,55 +52,14 @@ enddo
 
 do i=1,Ny
  do j=1,Nx
-    F((i-1)*Nx+j) = Y(i) - Y(i)**2 + X(j) - X(j)**2
-    Uexacte((i-1)*Nx+j)=X(j)*(1-X(j))*Y(i)*(1-Y(i))
+    F((i-1)*Nx+j) = Y(j) - Y(j)**2 + X(i) - X(i)**2
  end do
 end do
 
-open( unit=10, &
-file = "f.txt", &
-action = "write", &
-status = "unknown")
-do i=1,Ny
-    do j=1,Nx
-    write(10,*) Y(i),X(j),F((i-1)*Nx+j)
-    end do
-    write(10,*) " "
-end do
-close(10)
+write(*,*)F
 
-U=0.
-D=1.
-dt=0.01
-alpha=1./dt + 2.*D/dx**2 + 2.*D/dy**2
-beta=-D/dx**2.
-gama=-D/dy**2.
-call grad_conj(Nx, Ny, alpha, beta, gama, U, F)  
-
-open( unit=12, &
-file = "sol.txt", &
-action = "write", &
-status = "unknown")
-do i=1,Ny
-    do j=1,Nx
-    write(12,*) Y(i),X(j),U((i-1)*Nx+j)
-    end do
-    write(12,*) " "
-end do
-close(12)
-
-open( unit=13, &
-file = "solexacte.txt", &
-action = "write", &
-status = "unknown")
-do i=1,Ny
-    do j=1,Nx
-       
-    write(13,*) Y(i),X(j),Uexacte((i-1)*Nx+j)
-    end do
-    write(13,*) " "
-end do
-close(13)
+X1=1.
+call mult(1.0D0,1.0D0,1.0D0,X1,C,Nx,Ny)
 
 
 end program
