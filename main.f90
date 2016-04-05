@@ -19,6 +19,8 @@ real*8,dimension(:),allocatable::X1,C
 !call grad_conj(4,A,X2,b)
 !print*,matmul(A,X2)
 
+!coucou jafar
+
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !!!! TEST DE LA BOUCLE MULT !!!!!!!!!!!!
