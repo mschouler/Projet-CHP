@@ -3,10 +3,9 @@ implicit none
 
 
 contains
-  subroutine grad_conj(Nx, Ny,alpha,beta,gama, A,X,b)
+  subroutine grad_conj(Nx, Ny, alpha, beta, gama, X, b)
     implicit none
     integer,intent(in)::Nx, Ny
-    real*8,intent(in),dimension(Nx*Ny,Nx*Ny)::A
     real*8,intent(inout),dimension(Nx*Ny)::X
     real*8,intent(in),dimension(Nx*Ny)::b
     real*8,intent(in)::alpha,beta,gama
@@ -18,17 +17,13 @@ contains
     n=Nx*Ny
    
     !initialisation 
-    !R=matmul(A,X)-b
     call mult(alpha, beta, gama, X, R, Nx, Ny)
     R = R - b
     d=R
    
     !boucle 
     do while(norme(R,n)>eps .and. l<=niter)
-       !print*,'iteration',l
-        call mult(alpha, beta, gama, d, w, Nx, Ny)
-        !w=matmul(A,d)
-       !print*,w
+       call mult(alpha, beta, gama, d, w, Nx, Ny)
        alpha_=scal(d,R,n)/scal(d,w,n)
        X=X-alpha_*d
        R1=R-alpha_*w
@@ -37,7 +32,7 @@ contains
        R=R1
        l=l+1
     end do
-    
+    print*,'iteration',l
     end subroutine
 
     function norme(X,n)
