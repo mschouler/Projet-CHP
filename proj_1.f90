@@ -183,6 +183,57 @@ contains
 
         end subroutine mult
 
+
+!**********************************************************************************************************
+!                 SUBROUTINE  MULT2
+!**********************************************************************************************************
+        subroutine mult2(alpha, beta, gama, X, B, Nx, Ny, g, h)
+          implicit none
+          real*8, intent(in) :: alpha, beta, gama
+          integer, intent(in) :: Nx,Ny
+          integer :: i, k, l, n, compt
+          real*8, dimension(Nx*Ny), intent(in) :: X
+          real*8, dimension(Nx*Ny), intent(out) :: B
+	  real*8, dimension(:), intent(in) :: g, h		
+          n=Nx*Ny
+
+	compt = 2;
+
+        B(1)=alpha*X(1) + beta*X(2) + gama*X(1+Nx) + h(1) + g(1)
+
+          do i=2,Nx-1
+             B(i) = alpha*X(i) + beta*X(i-1) + beta*X(i+1) + gama*X(i+Nx) + g(i)
+          enddo
+
+        B(Nx)=alpha*X(Nx) + beta*X(Nx-1) + gama*X(2*Nx) + g(Nx) + h(1+Nx)
+
+          do i=Nx+1, n-(Nx+1)
+             if (MOD(i, Nx) == 1) then
+		B(i) = alpha*X(i) + beta*X(i+1) + h(compt) + gama*(X(i-Nx) + X(i+Nx))
+		compt = compt+1                
+
+             else if (MOD(i, Nx) == 0) then
+		B(i) = alpha*X(i) + beta*X(i-1) + h(compt+Nx) + gama*(X(i-Nx) + X(i+Nx))
+
+             else
+		B(i) = gama*(X(i-Nx) + X(i+Nx)) + beta*(X(i-1) + X(i+1)) + alpha*X(i)
+             endif
+             
+          enddo
+
+
+ 	  B(n-Nx+1)=gama*(X(n-2*Nx+1)) + alpha*X(n-Nx+1) + beta*X(n-Nx+2) + g(Nx+1) + h(compt)
+
+          do i=n-Nx+2, n-1
+             B(i) = gama*X(i-Nx) + beta*X(i-1) + beta*X(i+1) + alpha*X(i) + g(i-(compt-1)*Nx)
+          enddo
+
+        B(n)=gama*X(n-Nx) + beta*X(n-1) + alpha*X(n) + g(2*Nx) + h(2*Ny)
+
+
+        end subroutine mult2
+!***********************************************************************************************************
+
 end module
 
 
